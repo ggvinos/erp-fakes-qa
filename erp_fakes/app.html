@@ -1,0 +1,409 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ERP Fakes</title>
+<style>
+:root{--side:#5b0c2c;--side-hover:#701238;--side-on:#8a1a46;--side-fg:#f4e3ea;--side-mut:#c99bad;
+--bg:#f4f2f5;--card:#fff;--line:#e4dde7;--fg:#2a2230;--mut:#6f6578;--ac:#8a1538;--ac-h:#730f2e;--field:#fff;
+--ok:#1f7a3f;--okbg:#e4f3e8;--info:#1565c0;--infobg:#e3f0fd;--warn:#a65b00;--warnbg:#fff1dc;--err:#b3261e;--errbg:#fde7e5;--neu:#5b5163;--neubg:#ece8f0}
+@media(prefers-color-scheme:dark){:root{--bg:#171219;--card:#241b28;--line:#3e3246;--fg:#f1e9f4;--mut:#a99bb0;--ac:#e0709f;--ac-h:#ee86b0;--field:#1c1520;
+--ok:#6fd08f;--okbg:#17301f;--info:#7db7f2;--infobg:#142a40;--warn:#f0b35b;--warnbg:#3a2a10;--err:#ff8a80;--errbg:#3d1815;--neu:#c9bdd0;--neubg:#33293a}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:14px/1.5 Roboto,Inter,system-ui,sans-serif}
+.app{display:flex;min-height:100vh}
+.side{width:236px;flex:none;background:var(--side);color:var(--side-fg);display:flex;flex-direction:column;position:sticky;top:0;height:100vh}
+.brand{padding:20px 20px 14px;font-size:22px;font-weight:700;letter-spacing:.3px;cursor:pointer}.brand span{font-weight:400;opacity:.8}
+.side nav{flex:1;overflow:auto;padding:4px 0}
+.grp{padding:14px 20px 4px;font-size:11px;text-transform:uppercase;letter-spacing:.8px;color:var(--side-mut)}
+.side a{display:block;padding:9px 20px;color:var(--side-fg);text-decoration:none;border-left:3px solid transparent;font-size:14px}
+.side a:hover{background:var(--side-hover)}.side a.on{background:var(--side-on);border-left-color:#ff9db9;font-weight:600}
+.side .seg.erps{margin:0 16px 6px;gap:4px;flex-wrap:nowrap}.side .seg.erps button{flex:1;padding:6px 2px;font-size:12px;background:transparent;color:var(--side-fg);border-color:#a8466b}.side .seg.erps button.on{background:#fff;color:var(--ac);border-color:#fff;font-weight:600}
+.card .bt{margin-top:12px}
+.sidefoot{padding:14px 20px;border-top:1px solid #7a2548;font-size:12px;color:var(--side-mut)}
+.main{flex:1;min-width:0}
+.top{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;padding:22px 28px 6px;flex-wrap:wrap}
+.top h1{margin:0;font-size:26px;font-weight:600}.top p{margin:4px 0 0;color:var(--mut)}
+.acts{display:flex;gap:8px;flex-wrap:wrap}
+main{padding:14px 28px 40px;max-width:1280px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:18px;margin-bottom:16px;overflow-x:auto}
+td.nw{white-space:nowrap}
+.card h2{font-size:16px;margin:0 0 4px}.card .sub{color:var(--mut);margin:0 0 14px}
+h3{font-size:13px;margin:18px 0 8px;text-transform:uppercase;letter-spacing:.5px;color:var(--mut)}
+button,input,select,textarea{font:inherit}
+button{padding:8px 16px;border:1px solid var(--ac);border-radius:6px;background:var(--ac);color:#fff;cursor:pointer;font-weight:500}
+button:hover{background:var(--ac-h)}button.sec{background:transparent;color:var(--ac);border-color:var(--line)}button.sec:hover{border-color:var(--ac);background:transparent}
+button.perigo{background:transparent;color:var(--err);border-color:var(--err)}button.perigo:hover{background:var(--errbg)}
+button.peq{padding:5px 11px;font-size:13px}button:disabled{opacity:.45;cursor:default}
+input,select,textarea{padding:9px 11px;border:1px solid var(--line);border-radius:6px;background:var(--field);color:var(--fg);width:100%}
+input:focus,select:focus,textarea:focus{outline:2px solid var(--ac);outline-offset:-1px;border-color:var(--ac)}
+label.f{display:flex;flex-direction:column;gap:5px;font-size:12px;color:var(--mut);font-weight:500}
+.fg{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.fg .full{grid-column:1/-1}
+@media(max-width:700px){.fg{grid-template-columns:1fr}}
+.bar{display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end;margin-bottom:14px}.bar .grow{flex:1;min-width:200px}.bar label.f{min-width:150px}
+table{width:100%;border-collapse:collapse}
+th{text-align:left;padding:10px 10px;font-size:12px;font-weight:600;color:var(--mut);border-bottom:2px solid var(--line);white-space:nowrap}
+td{padding:11px 10px;border-bottom:1px solid var(--line);vertical-align:middle;font-size:13px}
+tr.lin{cursor:pointer}tr.lin:hover td{background:var(--bg)}tr.sel td{background:var(--infobg)}
+.vazio{text-align:center;color:var(--mut);padding:36px 0}
+.slots{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}.slot{padding:4px 10px;font-size:12px}.slot.livre{border-color:var(--ok,#2a9d5c)}.slot.ocupado{opacity:.6}
+.chip{display:inline-block;padding:2px 10px;border-radius:99px;font-size:12px;font-weight:600;background:var(--neubg);color:var(--neu);white-space:nowrap}
+.chip.ok{background:var(--okbg);color:var(--ok)}.chip.info{background:var(--infobg);color:var(--info)}.chip.warn{background:var(--warnbg);color:var(--warn)}.chip.err{background:var(--errbg);color:var(--err)}
+.seg{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}.seg button{background:transparent;color:var(--fg);border-color:var(--line);padding:6px 13px;font-weight:400}
+.seg button.on{background:var(--ac);color:#fff;border-color:var(--ac);font-weight:500}
+.alert{border-radius:6px;padding:11px 14px;margin-bottom:10px;border-left:4px solid}.alert b{display:block}
+.alert.ok{background:var(--okbg);border-color:var(--ok)}.alert.alerta{background:var(--warnbg);border-color:var(--warn)}.alert.erro{background:var(--errbg);border-color:var(--err)}.alert.info{background:var(--infobg);border-color:var(--info)}
+.copia{display:flex;gap:8px;align-items:flex-end;margin-bottom:12px}.copia label.f{flex:1}.copia input{font-family:ui-monospace,monospace;font-size:13px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}@media(max-width:1000px){.grid2{grid-template-columns:1fr}}
+.mut{color:var(--mut)}.peq{font-size:13px}
+pre{background:var(--bg);border:1px solid var(--line);padding:10px;border-radius:6px;overflow:auto;font-size:12px;max-height:300px;margin:6px 0;white-space:pre-wrap;word-break:break-word}
+.kv{display:grid;grid-template-columns:150px 1fr;gap:6px 12px;font-size:13px}.kv dt{color:var(--mut)}.kv dd{margin:0}
+.bt{display:flex;gap:6px;flex-wrap:wrap}.linha{display:flex;gap:8px;align-items:flex-end;margin-bottom:10px;flex-wrap:wrap}.linha label.f{flex:1;min-width:140px}
+svg{width:100%;height:auto}svg text{fill:var(--fg);font:13px Roboto,system-ui}svg .box{fill:var(--bg);stroke:var(--ac);stroke-width:1.4}svg .edge{stroke:var(--mut);stroke-width:1.2}svg .lab{fill:var(--mut);font-size:11px}
+#scrim{position:fixed;inset:0;background:rgba(20,10,24,.45);display:none;z-index:20}
+#drawer{position:fixed;top:0;right:0;bottom:0;width:min(620px,100vw);background:var(--card);z-index:21;display:none;flex-direction:column;box-shadow:-8px 0 30px rgba(0,0,0,.25)}
+#drawer.largo{width:min(860px,100vw)}
+.dr-head{padding:18px 22px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+.dr-head h2{margin:0;font-size:18px}.dr-head p{margin:3px 0 0;color:var(--mut);font-size:13px}
+.dr-body{flex:1;overflow:auto;padding:18px 22px}.dr-foot{padding:14px 22px;border-top:1px solid var(--line);display:flex;gap:8px;justify-content:space-between;flex-wrap:wrap}
+#aviso{position:fixed;left:50%;transform:translateX(-50%);bottom:20px;max-width:440px;padding:11px 18px;border-radius:6px;background:var(--fg);color:var(--bg);display:none;z-index:40}
+#aviso.erro{background:var(--err);color:#fff}
+details summary{cursor:pointer;color:var(--ac);font-weight:500;margin:8px 0}
+@media(max-width:860px){.app{flex-direction:column}.side{width:100%;height:auto;position:static}.side nav{display:flex;flex-wrap:wrap}.grp{display:none}.sidefoot{display:none}}
+</style>
+</head>
+<body>
+<div class="app">
+<aside class="side"><div class="brand" onclick="location.hash='#inicio'">ERP <span>Fakes</span></div><div id="erps"></div><nav id="nav"></nav><div class="sidefoot" id="sf">carregando</div></aside>
+<div class="main"><div class="top"><div><h1 id="ttl"></h1><p id="sub"></p></div><div class="acts" id="acts"></div></div><main id="view"></main></div>
+</div>
+<div id="scrim"></div><aside id="drawer"></aside><div id="aviso"></div>
+<script>
+const $=(s,r=document)=>r.querySelector(s);
+function h(tag,props,...kids){const e=document.createElement(tag);for(const [k,v] of Object.entries(props||{})){if(v==null||v===false)continue;
+ if(k==='class')e.className=v;else if(k.startsWith('on'))e[k]=v;else if(k==='value')e.value=v;else e.setAttribute(k,v===true?'':v)}
+ for(const c of kids.flat(2)){if(c==null||c===false)continue;e.append(c.nodeType?c:document.createTextNode(String(c)))}return e}
+let TOKEN='',STATUS=null,TIMER=null,AV=null,DR=null;
+const ERPS=[['feegow','Feegow'],['netpacs','NetPacs'],['tasy','Tasy']];
+let ERP='feegow';try{const e=localStorage.getItem('erp');if(ERPS.some(x=>x[0]===e))ERP=e}catch(e){}
+const nomeErp=()=>ERPS.find(x=>x[0]===ERP)[1];
+async function api(path,opts={}){const r=await fetch(path,{method:opts.method||'GET',headers:{'x-access-token':TOKEN,'x-erp':ERP,'content-type':'application/json'},body:opts.body?JSON.stringify(opts.body):undefined});
+ let j=null;try{j=await r.json()}catch(e){}if(!r.ok){const m=j&&(j.erro||j.content||j.message)||r.statusText;const er=new Error(typeof m==='string'?m:JSON.stringify(m));er.status=r.status;throw er}return j}
+function aviso(msg,erro){const a=$('#aviso');a.textContent=msg;a.className=erro?'erro':'';a.style.display='block';clearTimeout(AV);AV=setTimeout(()=>a.style.display='none',erro?7000:3200)}
+async function tente(fn){try{return await fn()}catch(e){aviso(e.message,true)}}
+const hora=t=>new Date(t*1000).toLocaleTimeString('pt-BR');
+const atras=t=>{if(!t)return 'nunca';const s=Math.round(Date.now()/1000-t);return s<60?s+' s':s<3600?Math.round(s/60)+' min':Math.round(s/3600)+' h'};
+function copiar(txt,btn){navigator.clipboard.writeText(txt);const o=btn.textContent;btn.textContent='Copiado';setTimeout(()=>btn.textContent=o,1200)}
+const chip=(t,tipo)=>h('span',{class:'chip'+(tipo?' '+tipo:'')},t);
+const STCOR={1:'info',2:'warn',3:'ok',4:'warn',5:'warn',6:'warn',7:'ok',11:'err',15:'err',16:''};
+const statusChip=(id,nome)=>chip(nome||String(id),STCOR[id]);
+function campo(rotulo,el,cls){return h('label',{class:'f'+(cls?' '+cls:'')},rotulo,el)}
+function vazio(t){return h('div',{class:'vazio'},t)}
+function cabecalho(titulo,sub,...acoes){$('#ttl').textContent=titulo;$('#sub').textContent=sub||'';$('#acts').replaceChildren(...acoes.flat().filter(Boolean))}
+function abreDrawer(titulo,sub,corpo,rodape,largo){const d=$('#drawer');d.className=largo?'largo':'';d.style.display='flex';$('#scrim').style.display='block';
+ d.replaceChildren(h('div',{class:'dr-head'},h('div',{},h('h2',{},titulo),sub?h('p',{},sub):null),h('button',{class:'sec peq',onclick:fechaDrawer},'Fechar')),h('div',{class:'dr-body'},corpo),rodape?h('div',{class:'dr-foot'},rodape):null)}
+function fechaDrawer(){$('#drawer').style.display='none';$('#scrim').style.display='none';DR=null}
+$('#scrim').onclick=fechaDrawer;document.addEventListener('keydown',e=>{if(e.key==='Escape')fechaDrawer()});
+function parseTabela(txt){const ls=txt.split('\n').map(l=>l.replace(/\r$/,'')).filter(l=>l.trim()&&!/^\+[-+]+\+$/.test(l.trim()));if(!ls.length)return [];
+ const caixa=ls[0].trim().startsWith('|');const rows=caixa?ls.filter(l=>l.trim().startsWith('|')).map(l=>l.trim().replace(/^\||\|$/g,'').split('|').map(c=>c.trim())):ls.map(l=>l.split('\t').map(c=>c.trim()));
+ const cab=rows[0].map(c=>c.toLowerCase());return rows.slice(1).filter(r=>r.length===cab.length).map(r=>Object.fromEntries(cab.map((c,i)=>[c,r[i]])))}
+function valorNum(t){if(t==null||t==='')return null;if(typeof t==='number')return t;let x=String(t).replace(/[^0-9,.\-]/g,'');if(!x)return null;const vc=x.lastIndexOf(','),vp=x.lastIndexOf('.');
+ if(vc>=0&&vp>=0)x=vc>vp?x.replace(/\./g,'').replace(',','.'):x.replace(/,/g,'');else if(vc>=0)x=x.replace(',','.');else if(/^-?\d{1,3}(\.\d{3})+$/.test(x))x=x.replace(/\./g,'');
+ const n=parseFloat(x);return isNaN(n)||n<=0||n>99999.99?null:Math.round(n*100)/100}
+const GRUPOS=[['Conexão',[['inicio','Início']]],['Dados e simulação',[['dados','Dados do ERP'],['agenda','Agendamentos'],['horarios','Horários'],['volume','Volume e importação'],['roteiros','Roteiros']]],['Diagnóstico',[['chamadas','Chamadas'],['falhas','Falhas simuladas'],['docs','Documentação']]]];
+const VIEWS={};
+function montaErps(){document.title=nomeErp()+' | ERP Fakes';
+ $('#erps').replaceChildren(h('div',{class:'grp'},'ERP simulado'),h('div',{class:'seg erps'},...ERPS.map(([k,t])=>h('button',{class:k===ERP?'on':'',onclick:()=>trocaErp(k)},t))))}
+function trocaErp(k){if(k===ERP)return;ERP=k;try{localStorage.setItem('erp',k)}catch(e){}
+ if(typeof AG!=='undefined'){AG.listas=null;AG.conf={};AG.q='';AG.cenario='';AG.dia='';AG.ini=0;AG.sel=null}if(typeof DT!=='undefined'){DT.tipo='profissionais';DT.q='';DT.ini=0}if(typeof HR!=='undefined'){HR.unid='';HR.prof=''}
+ montaErps();rota()}
+function montaNav(atual){$('#nav').replaceChildren(...GRUPOS.flatMap(([g,its])=>[h('div',{class:'grp'},g),...its.filter(([k])=>k!=='roteiros'||STATUS.perfil.roteiros).map(([k,t])=>h('a',{href:'#'+k,class:k===atual?'on':''},t))]))}
+async function status(){try{STATUS=await (await fetch('/_local/status')).json();TOKEN=STATUS.token;const st=STATUS.tunel.status;
+ const lv=$('#rt-live');if(lv){lv.className='alert '+(STATUS.cliente.em_andamento?'info':'ok');lv.replaceChildren(h('b',{},STATUS.cliente.em_andamento?'Carga [[do_cliente]] em andamento':'[[O_cliente]] está parada'),h('span',{},STATUS.cliente.em_andamento?'Espere terminar antes de rodar a consulta no banco.':'Pode rodar a consulta no banco.'))}
+ $('#sf').replaceChildren(h('div',{},'Túnel: ',chip(st,st==='conectado'?'ok':st==='iniciando'||st==='desligado'?'':'err')),h('div',{style:'margin-top:6px'},'Porta local '+STATUS.porta))}catch(e){$('#sf').textContent='sem resposta do programa'}}
+function rota(){montaErps();const k=(location.hash||'#inicio').slice(1);const f=VIEWS[k]||VIEWS.inicio;clearInterval(TIMER);TIMER=null;fechaDrawer();montaNav(VIEWS[k]?k:'inicio');window.scrollTo(0,0);f()}
+
+/* ---------- Início ---------- */
+VIEWS.inicio=async()=>{
+ cabecalho('Conexão com [[o_cliente]]','Cole a URL e a chave na integração da conta de teste. Esta tela avisa quando algo ficar desatualizado.');
+ $('#view').replaceChildren(h('div',{id:'al'}),h('div',{class:'grid2'},
+  h('div',{class:'card'},h('h2',{},'Configuração da conta'),h('p',{class:'sub',id:'cxs'},''),h('div',{id:'cx'}),h('div',{id:'cxa'}),
+   h('ol',{class:'mut'},h('li',{},'Cole a URL e o token e salve.'),h('li',{},'[[instrucao_carga]]'),h('li',{},'Acompanhe em Chamadas o que [[o_cliente]] pediu.')),
+   h('button',{class:'sec',onclick:async()=>{await fetch('/_local/ack');tela()}},'Já atualizei na conta')),
+  h('div',{class:'card'},h('h2',{},'Atividade [[do_cliente]]'),h('p',{id:'ac',class:'sub'}),h('div',{id:'ca'}),h('p',{style:'margin:12px 0 0'},h('a',{href:'#chamadas',style:'color:var(--ac)'},'Ver todas as chamadas')))),
+  h('p',{id:'pe',class:'mut peq'}));
+ async function tela(){await status();const s=STATUS;
+  $('#al').replaceChildren(...s.alertas.map(a=>h('div',{class:'alert '+a.nivel},h('b',{},a.titulo),h('span',{},a.detalhe))));
+  const cp=(r,val)=>h('div',{class:'copia'},campo(r,h('input',{value:val,readonly:true})),h('button',{class:'sec',onclick:e=>copiar(val,e.target)},'Copiar'));
+  const conta=(s.erps||{})[ERP];$('#cxs').textContent='[[caminho_conta]] '+nomeErp()+'.';
+  if(conta){$('#cx').replaceChildren(...conta.campos.map(([r,v])=>cp(r,v||'aguardando túnel')));$('#cxa').replaceChildren(conta.aviso?h('p',{class:'mut peq'},conta.aviso):'')}
+  const j=await tente(()=>api('/_admin/journal?limite=8&origem=tunel&erp='+ERP));
+  $('#ac').textContent=s.cliente.ultima_chamada?`Última chamada há ${atras(s.cliente.ultima_chamada)}. ${s.cliente.chamadas_5min} chamadas nos últimos 5 minutos.`:'Nenhuma chamada [[do_cliente]] pelo túnel ainda.';
+  $('#ca').replaceChildren(j&&j.itens.length?h('table',{},...j.itens.map(e=>h('tr',{},h('td',{},hora(e.t)),h('td',{},e.metodo),h('td',{},e.caminho),h('td',{},chip(String(e.status),e.status>=400?'err':'ok'))))):vazio('Sem chamadas ainda'));
+  $('#pe').textContent=(s.tunel.desde?`Endereço atual criado às ${hora(s.tunel.desde)}. `:'')+`Porta local ${s.porta}.`}
+ await tela();TIMER=setInterval(tela,4000)};
+
+/* ---------- Dados ---------- */
+const NOMES={unidades:'Unidades',especialidades:'Especialidades',convenios:'Convênios',planos:'Planos',tabelas:'Tabelas particulares',procedimentos:'Procedimentos',profissionais:'Profissionais',pacientes:'Pacientes',bloqueios:'Bloqueios de agenda'};
+const SING={unidades:'Unidade',especialidades:'Especialidade',convenios:'Convênio',planos:'Plano',tabelas:'Tabela particular',procedimentos:'Procedimento',profissionais:'Profissional',pacientes:'Paciente',bloqueios:'Bloqueio de agenda'};
+const POS={tipos:[20,20],unidades:[320,20],especialidades:[620,20],procedimentos:[20,170],agendamentos:[320,170],profissionais:[620,170],bloqueios:[830,170],pacientes:[20,320],tabelas:[320,320],convenios:[620,320],planos:[830,320],ocultos:[620,430]};
+let DT={aba:'dados',tipo:'profissionais',q:'',ini:0};
+VIEWS.dados=async()=>{
+ const abas=h('div',{class:'seg'},...[['dados','Editar dados'],['mapa','Mapa e relacionamentos']].map(([k,t])=>h('button',{class:DT.aba===k?'on':'',onclick:()=>{DT.aba=k;VIEWS.dados()}},t)));
+ $('#view').replaceChildren(abas,h('div',{id:'dz'}));
+ if(DT.aba==='mapa'){cabecalho('Dados do ERP','Como as entidades do '+nomeErp()+' se relacionam e onde cada uma cai [[no_cliente]].');return mapa()}
+ cabecalho('Dados do ERP','O que você muda aqui é o que [[o_cliente]] recebe na próxima carga.',h('button',{onclick:novoRegistro},'Novo registro'));
+ await tabelaDados()};
+async function tabelaDados(){const d=await tente(()=>api(`/_admin/entities/${DT.tipo}?q=${encodeURIComponent(DT.q)}&limite=15&inicio=${DT.ini}`));if(!d)return;
+ const cols=d.linhas[0]?Object.keys(d.linhas[0]):[d.id];
+ const tipos=h('div',{class:'seg'},...Object.entries(NOMES).map(([k,t])=>h('button',{class:DT.tipo===k?'on':'',onclick:()=>{DT.tipo=k;DT.q='';DT.ini=0;tabelaDados()}},t)));
+ const busca=h('input',{placeholder:'Buscar em '+NOMES[DT.tipo].toLowerCase(),value:DT.q,onkeydown:e=>{if(e.key==='Enter'){DT.q=e.target.value;DT.ini=0;tabelaDados()}}});
+ const bonito=c=>c.replace(/_/g,' ');
+ $('#dz').replaceChildren(h('div',{class:'card'},h('p',{class:'sub'},'O id de cada registro é o ID externo: [[o_cliente]] guarda como ID externo e dá o seu próprio ID interno. Clique em uma linha para editar.'),tipos,
+  h('div',{class:'bar'},campo('Buscar',busca,'grow')),
+  d.linhas.length?h('table',{},h('tr',{},...cols.map(c=>h('th',{},bonito(c)))),...d.linhas.map(l=>h('tr',{class:'lin',onclick:()=>editaRegistro(d,l)},...cols.map(c=>h('td',{},Array.isArray(l[c])?l[c].join(', '):typeof l[c]==='boolean'?(l[c]?'Sim':'Não'):String(l[c]??'')))))):vazio('Nenhum registro encontrado'),
+  h('div',{class:'bar',style:'margin:12px 0 0'},h('button',{class:'sec peq',disabled:DT.ini===0,onclick:()=>{DT.ini=Math.max(0,DT.ini-15);tabelaDados()}},'Anterior'),h('span',{class:'mut'},`${d.total?DT.ini+1:0} a ${Math.min(DT.ini+15,d.total)} de ${d.total}`),h('button',{class:'sec peq',disabled:DT.ini+15>=d.total,onclick:()=>{DT.ini+=15;tabelaDados()}},'Próxima'))))}
+function formEntidade(d,linha){const campos={};const els=Object.entries(d.editaveis).map(([k,t])=>{let el;
+  if(t==='booleano'){el=h('select',{},h('option',{value:'true'},'Sim'),h('option',{value:'false'},'Não'));el.value=String(!!linha[k])}
+  else el=h('input',{type:t==='inteiro'||t==='decimal'?'number':'text',step:t==='decimal'?'0.1':null,value:Array.isArray(linha[k])?linha[k].join(', '):(linha[k]??'')});
+  campos[k]=el;return campo(k.replace(/_/g,' ')+(t==='lista'?' (ids separados por vírgula)':''),el,k.startsWith('nome')||k==='description'?'full':'')});
+ return [campos,h('div',{class:'fg'},...els)]}
+function editaRegistro(d,l){const ident=l[d.id];const [campos,form]=formEntidade(d,l);
+ const salva=async()=>{const body={};for(const [k,el] of Object.entries(campos))body[k]=el.value;const r=await tente(()=>api(`/_admin/entities/${DT.tipo}/${ident}`,{method:'POST',body}));if(r){aviso('Salvo. [[O_cliente]] vê na próxima carga.');fechaDrawer();tabelaDados()}};
+ const remove=async()=>{if(!confirm('Remover do ERP? [[O_cliente]] deixa de receber este registro.'))return;const r=await tente(()=>api(`/_admin/entities/${DT.tipo}/${ident}/remover`,{method:'POST',body:{}}));if(r){aviso('Removido do ERP.');fechaDrawer();tabelaDados()}};
+ abreDrawer(`${SING[DT.tipo]} ${ident}`,'ID externo '+ident,form,[h('button',{class:'perigo',onclick:remove},'Remover do ERP'),h('div',{class:'bt'},h('button',{class:'sec',onclick:fechaDrawer},'Cancelar'),h('button',{onclick:salva},'Salvar'))])}
+async function novoRegistro(){const extra=DT.tipo==='planos'?{convenio_id:prompt('Id do convênio do novo plano')}:{};const r=await tente(()=>api(`/_admin/entities/${DT.tipo}`,{method:'POST',body:extra}));if(!r)return;
+ aviso('Criado com id '+r.id+'. Ajuste os campos.');DT.q=String(r.id);DT.ini=0;await tabelaDados();const d=await api(`/_admin/entities/${DT.tipo}?q=${r.id}&limite=5`);const l=d.linhas.find(x=>x[d.id]===r.id);if(l)editaRegistro(d,l)}
+async function mapa(){const m=await tente(()=>api('/_admin/model'));if(!m)return;
+ const por={};m.entidades.forEach(e=>por[e.chave]=e);
+ $('#dz').replaceChildren(h('div',{class:'card'},h('h2',{},'Mapa das entidades'),h('p',{class:'sub'},'Cada caixa é um tipo de dado do '+nomeErp()+' fake, com a quantidade de registros. A linha mostra a relação (N:1 é muitos para um) e quantos vínculos existem.'),svgMapa(m)),
+  h('div',{class:'grid2'},h('div',{class:'card'},h('h2',{},'Onde cada entidade cai [[no_cliente]]'),h('table',{},h('tr',{},h('th',{},nomeErp()),h('th',{},'Registros'),h('th',{},'Vira [[no_cliente]]')),...m.entidades.map(e=>h('tr',{},h('td',{},e.nome),h('td',{},String(e.total)),h('td',{},e.destino))))),
+   h('div',{class:'card'},h('h2',{},'Relacionamentos'),h('table',{},...m.relacoes.map(r=>h('tr',{},h('td',{},por[r.de].nome+' > '+por[r.para].nome),h('td',{},r.tipo),h('td',{},String(r.qtde)),h('td',{class:'mut'},r.obs)))),
+    h('h3',{},'Agendamentos por cenário'),h('table',{},...Object.entries(m.agendamentos_por_cenario).sort((a,b)=>b[1]-a[1]).map(([k,n])=>h('tr',{},h('td',{},k),h('td',{},String(n))))))))}
+function svgMapa(m){const NS='http://www.w3.org/2000/svg',W=190,H=64,s=document.createElementNS(NS,'svg');s.setAttribute('viewBox','0 0 1040 510');
+ const e=(t,a,tx)=>{const x=document.createElementNS(NS,t);for(const [k,v] of Object.entries(a))x.setAttribute(k,v);if(tx!=null)x.textContent=tx;return x};
+ const by={};m.entidades.forEach(x=>by[x.chave]=x);const c=k=>[POS[k][0]+W/2,POS[k][1]+H/2];
+ for(const r of m.relacoes){if(!POS[r.de]||!POS[r.para])continue;const [x1,y1]=c(r.de),[x2,y2]=c(r.para);s.append(e('line',{x1,y1,x2,y2,class:'edge'}),e('text',{x:(x1+x2)/2,y:(y1+y2)/2-3,class:'lab','text-anchor':'middle'},r.tipo+' ('+r.qtde+')'))}
+ for(const [k,[x,y]] of Object.entries(POS)){const en=by[k];if(!en)continue;s.append(e('rect',{x,y,width:W,height:H,rx:8,class:'box'}),e('text',{x:x+W/2,y:y+28,'text-anchor':'middle','font-weight':600},en.nome),e('text',{x:x+W/2,y:y+48,class:'lab','text-anchor':'middle'},en.total+' registros'))}
+ return s}
+
+/* ---------- Agendamentos ---------- */
+let AG={q:'',cenario:'',dia:'',ini:0,sel:null,listas:null,conf:lerConf(),conta:lerConta()};
+function lerConf(){try{return JSON.parse(localStorage.getItem('ffConferencia')||'{}')}catch(e){return {}}}
+function lerConta(){try{return localStorage.getItem('ffConta')||''}catch(e){return ''}}
+function guardaConf(){try{localStorage.setItem('ffConferencia',JSON.stringify(AG.conf));localStorage.setItem('ffConta',AG.conta)}catch(e){}}
+async function carregaListas(){if(AG.listas)return true;const g=async t=>(await api(`/_admin/entities/${t}?limite=300`)).linhas;
+ const r=await tente(async()=>({prof:await g('profissionais'),proc:await g('procedimentos'),conv:await g('convenios'),unid:await g('unidades'),sc:await api('/_admin/scenarios')}));if(!r)return false;AG.listas=r;return true}
+VIEWS.agenda=async()=>{
+ cabecalho('Agendamentos do ERP','Os agendamentos que [[o_cliente]] puxa do ERP. Clique em uma linha para ver os detalhes e agir como a clínica.',STATUS.perfil.conferencia&&h('button',{class:'sec',onclick:abreConferencia},'Conferir [[no_cliente]]'),h('button',{onclick:abreNovo},'Novo agendamento'));
+ if(!await carregaListas())return;const L=AG.listas;
+ const cen=h('select',{onchange:e=>{AG.cenario=e.target.value;AG.ini=0;lista()}},h('option',{value:''},'Todos os cenários'),...Object.keys(L.sc.por_cenario).map(c=>h('option',{value:c},c)));cen.value=AG.cenario;
+ const busca=h('input',{placeholder:'ID, paciente, profissional, procedimento...',value:AG.q,onkeydown:e=>{if(e.key==='Enter'){AG.q=e.target.value;AG.ini=0;lista()}}});
+ const dia=h('input',{type:'date',value:AG.dia,onchange:e=>{AG.dia=e.target.value;AG.ini=0;lista()}});
+ $('#view').replaceChildren(h('div',{class:'card'},h('div',{class:'bar'},campo('Buscar',busca,'grow'),campo('Cenário',cen),campo('Dia',dia),h('button',{class:'sec',onclick:()=>{AG.q=AG.cenario=AG.dia='';AG.ini=0;VIEWS.agenda()}},'Limpar filtros')),
+  h('p',{class:'mut peq'},'ID externo é o id do ERP ([[o_cliente]] guarda como ID externo). O ID [[do_cliente]] é o interno dela.'+(STATUS.perfil.conferencia?' Em Conferir [[no_cliente]] você vê os dois lado a lado.':'')),h('div',{id:'ls'})));
+ lista()};
+function confere(l){const n=AG.conf[String(l.agendamento_id)];if(!Object.keys(AG.conf).length)return null;if(!n)return [chip('não chegou','err')];
+ const t=[];const dn=(n.date||'').slice(0,16).replace('T',' ');t.push(dn===l.data+' '+l.horario.slice(0,5)?chip('data igual','ok'):chip('data diferente','warn'));
+ const ev=valorNum(l.valor),np=n.price&&n.price!=='NULL'?parseFloat(n.price):null;
+ t.push(ev==null?(np==null?chip('sem preço'):chip('preço por regra ou tabela')):(np===ev?chip('preço igual','ok'):chip('preço diferente','warn')));return t}
+async function lista(){const p=new URLSearchParams({q:AG.q,cenario:AG.cenario,dia:AG.dia,limite:12,inicio:AG.ini});const d=await tente(()=>api('/_admin/schedules?'+p));if(!d)return;
+ const tem=Object.keys(AG.conf).length>0;
+ const cab=['ID externo','Data e hora','Paciente','Profissional','Procedimento','Convênio ou tabela','Valor','Status'].concat(tem?['ID [[do_cliente]]','Preço [[no_cliente]]','Conferência']:[]);
+ const corpo=d.linhas.map(l=>{const n=AG.conf[String(l.agendamento_id)];
+  return h('tr',{class:'lin'+(AG.sel===l.agendamento_id?' sel':''),onclick:()=>{AG.sel=l.agendamento_id;lista();abreDetalhe(l.agendamento_id)}},
+   h('td',{class:'nw'},h('b',{},String(l.agendamento_id))),h('td',{class:'nw'},l.data.split('-').reverse().join('/')+' '+l.horario.slice(0,5)),h('td',{},l.paciente),h('td',{},l.profissional),h('td',{},l.procedimento),h('td',{},l.convenio),h('td',{class:'nw'},l.valor||'-'),h('td',{class:'nw'},statusChip(l.status_id,l.status)),
+   ...(tem?[h('td',{},n?n.id_cliente:'-'),h('td',{},n&&n.price&&n.price!=='NULL'?n.price:'-'),h('td',{},confere(l))]:[]))});
+ $('#ls').replaceChildren(d.linhas.length?h('table',{},h('tr',{},...cab.map(c=>h('th',{},c))),...corpo):vazio('Nenhum agendamento encontrado'),
+  h('div',{class:'bar',style:'margin:12px 0 0'},h('button',{class:'sec peq',disabled:AG.ini===0,onclick:()=>{AG.ini=Math.max(0,AG.ini-12);lista()}},'Anterior'),h('span',{class:'mut'},`${d.total?AG.ini+1:0} a ${Math.min(AG.ini+12,d.total)} de ${d.total}`),h('button',{class:'sec peq',disabled:AG.ini+12>=d.total,onclick:()=>{AG.ini+=12;lista()}},'Próxima')))}
+async function umAgendamento(id){const d=await api('/_admin/schedules?'+new URLSearchParams({q:String(id),limite:50}));return {linha:d.linhas.find(x=>x.agendamento_id===id),acoes:d.acoes}}
+async function abreDetalhe(id){DR={tipo:'agenda',id};await pintaDetalhe()}
+async function pintaDetalhe(){if(!DR)return;const id=DR.id;const r=await tente(()=>umAgendamento(id));if(!r||!r.linha){fechaDrawer();return}const l=r.linha;const L=AG.listas;
+ const bruto=await tente(()=>api(`/v1/api/appoints/search?agendamento_id=${id}&list_procedures=1`));const cf=AG.conf[String(id)];
+ const exec=async(acao,body,msg)=>{const x=await tente(()=>api(`/_admin/schedule/${id}/acao`,{method:'POST',body:{acao,...body}}));if(!x)return;aviso(msg||'Feito. [[O_cliente]] vê na próxima carga.');lista();if(acao==='sumir'){fechaDrawer();return}pintaDetalhe()};
+ const status=(a,rot)=>h('button',{class:'sec peq',onclick:()=>exec(a,{})},rot);
+ const sel=(opts,v)=>{const el=h('select',{},...opts.map(([x,n])=>h('option',{value:x},n)));if(v!=null)el.value=String(v);return el};
+ const linha=(rotulo,el,acao,pega)=>h('div',{class:'linha'},campo(rotulo,el),h('button',{class:'peq',onclick:()=>exec(acao,pega())},'Aplicar'));
+ const dData=h('input',{type:'date',value:new Date(Date.now()+864e5).toISOString().slice(0,10)}),dHora=h('input',{type:'time',value:'10:00'});
+ const sProf=sel(L.prof.map(x=>[x.profissional_id,x.nome]),l.profissional_id),sConv=sel([['','Particular'],...L.conv.map(x=>[x.convenio_id,x.nome])],l.convenio_id||''),sProc=sel(L.proc.map(x=>[x.procedimento_id,x.nome]),l.procedimento_id),iVal=h('input',{value:l.valor||'',placeholder:'vazio = sem valor'});
+ const kv=[['Data e hora',l.data.split('-').reverse().join('/')+' às '+l.horario.slice(0,5)],['Unidade',String(l.unidade_id)],['Profissional',l.profissional],['Procedimento',l.procedimento],['Paciente',`${l.paciente} (${l.celular||'sem telefone'})`],['Convênio ou tabela',l.convenio],['Valor do ERP',l.valor||'sem valor'],['Cenário',l.cenario]];
+ abreDrawer('Agendamento '+id,'ID externo '+id+(cf?', ID [[do_cliente]] '+cf.id_cliente:''),[
+  h('div',{style:'margin-bottom:14px'},statusChip(l.status_id,l.status)),
+  h('dl',{class:'kv'},...kv.flatMap(([k,v])=>[h('dt',{},k),h('dd',{},v)])),
+  h('h3',{},'Mudar o status, como a recepção'),h('div',{class:'bt'},status('confirmar','Confirmar'),status('cancelar','Cancelar (paciente)'),status('desmarcar_profissional','Desmarcar (profissional)'),status('chegou','Paciente chegou'),status('atendido','Atendido'),status('faltou','Faltou'),status('voltar_para_marcado','Voltar para marcado')),
+  h('h3',{},'Alterar o agendamento'),
+  h('div',{class:'linha'},campo('Nova data',dData),campo('Novo horário',dHora),h('button',{class:'peq',onclick:()=>exec('remarcar',{data:dData.value,horario:dHora.value+':00'},'Remarcado, o id continua o mesmo.')},'Remarcar')),
+  linha('Profissional',sProf,'trocar_profissional',()=>({profissional_id:sProf.value})),linha('Convênio',sConv,'trocar_convenio',()=>({convenio_id:sConv.value})),linha('Procedimento',sProc,'trocar_procedimento',()=>({procedimento_id:sProc.value})),linha('Valor do ERP',iVal,'definir_valor',()=>({valor:iVal.value})),
+  h('details',{},h('summary',{},'Como [[o_cliente]] vê (resposta do /appoints/search)'),h('pre',{},bruto?JSON.stringify(bruto.content[0],null,2):'-'))],
+  [h('button',{class:'perigo',onclick:()=>{if(confirm('O agendamento deixa de existir no ERP. Continuar?'))exec('sumir',{},'Removido do ERP.')}},'Sumir do ERP'),h('button',{class:'sec',onclick:fechaDrawer},'Fechar')])}
+async function abreNovo(pre){if(!await carregaListas())return;const L=AG.listas;const sel=(opts)=>h('select',{},...opts.map(([v,n])=>h('option',{value:v},n)));
+ const unid=sel(L.unid.map(u=>[u.unidade_id,u.nome_fantasia])),prof=sel(L.prof.map(x=>[x.profissional_id,x.nome])),proc=sel(L.proc.map(x=>[x.procedimento_id,x.nome])),conv=sel([['','Particular'],...L.conv.map(x=>[x.convenio_id,x.nome])]);
+ const valor=h('input',{placeholder:'vazio = sem valor'}),pnome=h('input',{value:'QA Teste'}),pcel=h('input',{placeholder:'vazio = telefone inválido'}),pid=h('input',{type:'number',placeholder:'opcional'});
+ const quando=sel([['horas','Daqui a N horas'],['data','Data e hora']]),horas=h('input',{type:'number',value:'24'}),data=h('input',{type:'date',value:new Date(Date.now()+864e5).toISOString().slice(0,10)}),horario=h('input',{type:'time',value:'10:00'});
+ if(pre){unid.value=pre.unid;prof.value=pre.prof;quando.value='data';data.value=pre.data;horario.value=pre.hora}
+ const bH=campo('Horas a partir de agora',horas),bD=campo('Data',data),bT=campo('Hora',horario);bD.style.display=bT.style.display='none';
+ quando.onchange=()=>{const dd=quando.value==='data';bH.style.display=dd?'none':'';bD.style.display=bT.style.display=dd?'':'none'};quando.onchange();
+ const cria=async()=>{const body={unidade_id:unid.value,profissional_id:prof.value,procedimento_id:proc.value,convenio_id:conv.value,valor:valor.value};
+  if(pid.value)body.paciente_id=pid.value;else body.paciente={nome:pnome.value,celular:pcel.value};
+  if(quando.value==='horas')body.em_horas=horas.value;else{body.data=data.value;body.horario=horario.value}
+  const r=await tente(()=>api('/_admin/schedule',{method:'POST',body}));if(!r)return;aviso('Criado: agendamento '+r.agendamento_id+'. Rode a carga [[no_cliente]].');AG.q=String(r.agendamento_id);AG.ini=0;AG.sel=r.agendamento_id;VIEWS.agenda();abreDetalhe(r.agendamento_id)};
+ abreDrawer('Novo agendamento no ERP','Cria o agendamento como a clínica faria. [[O_cliente]] o recebe na próxima carga.',[
+  h('h3',{style:'margin-top:0'},'Atendimento'),h('div',{class:'fg'},campo('Unidade',unid),campo('Profissional',prof),campo('Procedimento',proc),campo('Convênio',conv),campo('Valor do ERP',valor)),
+  h('h3',{},'Paciente'),h('div',{class:'fg'},campo('Nome (novo paciente)',pnome),campo('Celular (novo paciente)',pcel),campo('Ou id de um paciente existente',pid,'full')),
+  h('h3',{},'Quando'),h('div',{class:'fg'},campo('Tipo',quando),bH,bD,bT)],[h('span'),h('div',{class:'bt'},h('button',{class:'sec',onclick:fechaDrawer},'Cancelar'),h('button',{onclick:cria},'Criar agendamento'))])}
+async function abreConferencia(){const p=new URLSearchParams({q:AG.q,cenario:AG.cenario,dia:AG.dia,limite:200,inicio:0});const d=await tente(()=>api('/_admin/schedules?'+p));if(!d)return;
+ const ids=d.linhas.map(l=>l.agendamento_id);const conta=h('input',{value:AG.conta});const sql=h('pre',{});const cola=h('textarea',{rows:8,style:'font:12px ui-monospace,monospace',placeholder:'Cole aqui o resultado da consulta (tabela do banco ou colunas separadas por tab)'});
+ const monta=async()=>{const r=await tente(()=>api('/_admin/conferencia/consulta',{method:'POST',body:{ids,conta:conta.value||null}}));sql.textContent=r?r.consulta:''};conta.oninput=monta;monta();
+ const res=h('p',{class:'mut'});
+ abreDrawer('Conferir [[no_cliente]]',`Consulta para os ${ids.length} agendamentos do filtro atual, buscando pelo ID externo.`,[
+  h('ol',{class:'mut'},h('li',{},(STATUS.perfil.instrucao_banco||'No banco do sistema')+', rode a consulta abaixo.'),h('li',{},'Cole o resultado completo e clique em Aplicar.')),
+  h('div',{class:'copia'},campo('ID da conta [[no_cliente]]',conta),h('button',{class:'sec',onclick:e=>copiar(sql.textContent,e.target)},'Copiar consulta')),sql,campo('Resultado da consulta',cola),res],
+  [h('button',{class:'sec',onclick:()=>{AG.conf={};guardaConf();res.textContent='Conferência removida.';lista()}},'Limpar conferência'),h('div',{class:'bt'},h('button',{class:'sec',onclick:fechaDrawer},'Fechar'),h('button',{onclick:()=>{const rows=parseTabela(cola.value).filter(r=>r.id_externo);if(!rows.length){aviso('Não achei linhas com a coluna id_externo. Cole o resultado inteiro, com o cabeçalho.',true);return}
+   AG.conf=Object.fromEntries(rows.map(r=>[r.id_externo,r]));AG.conta=conta.value||STATUS.perfil.conta_padrao||'';guardaConf();const ch=ids.filter(i=>AG.conf[String(i)]).length;aviso(`${ch} de ${ids.length} chegaram [[no_cliente]].`);fechaDrawer();lista()}},'Aplicar resultado'))],true)}
+
+/* ---------- Roteiros ---------- */
+let RT={exec:null,conta:lerConta()};
+VIEWS.roteiros=async()=>{
+ cabecalho('Roteiros','Receitas que mudam o ERP, dizem o que [[o_cliente]] deve gravar e conferem o resultado depois da carga.');
+ const d=await tente(()=>api('/_admin/roteiros'));if(!d)return;
+ $('#view').replaceChildren(h('div',{class:'grid2'},...d.roteiros.map(r=>h('div',{class:'card'},h('h2',{},r.titulo,' ',r.card?chip(r.card,'info'):null),h('p',{class:'sub',style:'margin-top:8px'},r.descricao),h('p',{class:'mut peq'},r.passos+' passos. Executar altera os dados do fake e marca os agendamentos usados, para o próximo roteiro escolher outros.'),h('button',{onclick:()=>executaRoteiro(r)},'Executar')))),
+  h('div',{class:'card'},h('h2',{},'Agendamentos já usados por roteiros: '+d.usados),h('p',{class:'sub'},'Os roteiros não repetem agendamentos que [[o_cliente]] já alterou, mesmo depois de reiniciar o programa. Se a conta de teste [[do_cliente]] foi limpa, esqueça a lista.'),h('button',{class:'sec',onclick:async()=>{await tente(()=>api('/_admin/roteiros/limpar-usados',{method:'POST',body:{}}));aviso('Lista esquecida.');VIEWS.roteiros()}},'Esquecer agendamentos usados')),
+  RT.exec?h('div',{class:'card'},h('h2',{},'Última execução: '+RT.exec.titulo),h('p',{class:'sub'},'Os passos e a consulta ficam guardados até você descartar.'),h('button',{class:'sec',onclick:mostraExec},'Reabrir execução')):null)};
+async function executaRoteiro(r){const e=await tente(()=>api(`/_admin/roteiros/${r.id}/executar`,{method:'POST',body:{conta:RT.conta}}));if(!e)return;RT.exec=e;mostraExec();aviso('Roteiro executado no ERP. Agora rode a carga [[no_cliente]].')}
+function mostraExec(){const e=RT.exec;
+ const conta=h('input',{value:RT.conta});const sql=h('pre',{});const monta=()=>{RT.conta=conta.value||'1';sql.textContent=e.consulta.replace(/accountId = \d+/,'accountId = '+RT.conta)};conta.oninput=monta;monta();
+ const area=(ph)=>h('textarea',{rows:5,style:'font:12px ui-monospace,monospace',placeholder:ph});
+ const antes=area('Opcional, só para conferir mudança de status: resultado de antes da carga'),depois=area('Resultado de depois da carga');const res=h('div',{});
+ abreDrawer(e.titulo,'Roteiro executado no ERP',[
+  h('h3',{style:'margin-top:0'},'O que aconteceu no ERP'),h('ul',{},...e.passos.map(p=>h('li',{},p))),
+  h('h3',{},'Agora'),h('div',{id:'rt-live',class:'alert info'},h('b',{},'Verificando [[o_cliente]]...')),h('ol',{},h('li',{},'Opcional: rode a consulta abaixo no banco e cole em "Antes da carga".'),h('li',{},'[[instrucao_carga]] Espere o aviso acima mostrar que [[o_cliente]] parou.'),h('li',{},'Rode a consulta de novo, cole em "Depois da carga" e clique em Avaliar.')),
+  h('div',{class:'copia'},campo('ID da conta [[no_cliente]]',conta),h('button',{class:'sec',onclick:ev=>copiar(sql.textContent,ev.target)},'Copiar consulta')),sql,campo('Antes da carga',antes),campo('Depois da carga',depois,'full'),res],
+  [h('button',{class:'sec',onclick:()=>{RT.exec=null;fechaDrawer();VIEWS.roteiros()}},'Descartar execução'),h('div',{class:'bt'},h('button',{class:'sec',onclick:fechaDrawer},'Fechar'),h('button',{onclick:async()=>{const linhas=parseTabela(depois.value).filter(r=>r.id_externo);if(!linhas.length){aviso('Cole o resultado inteiro da consulta (com o cabeçalho) em "Depois da carga".',true);return}
+   const ant=parseTabela(antes.value).filter(r=>r.id_externo);const r=await tente(()=>api('/_admin/roteiros/avaliar',{method:'POST',body:{verificacoes:e.verificacoes,linhas,antes:ant.length?ant:null}}));if(!r)return;
+   const ok=r.resultados.filter(x=>x.resultado==='passou').length;const cls=x=>x==='passou'?'ok':x==='falhou'?'err':'warn';
+   res.replaceChildren(h('h3',{},`${ok} de ${r.resultados.length} verificações passaram`),h('table',{},h('tr',{},...['ID externo','O que se verifica','Esperado','Obtido','Resultado'].map(c=>h('th',{},c))),
+    ...r.resultados.map(x=>h('tr',{},h('td',{},String(x.id_externo)),h('td',{},x.explica),h('td',{},String(x.esperado)),h('td',{},x.obtido),h('td',{},chip(x.resultado,cls(x.resultado)))))))}},'Avaliar'))],true)}
+
+/* ---------- Chamadas ---------- */
+let CH={caminho:'',erros:false,tunel:false};
+let HR={unid:'',prof:'',dias:7};
+VIEWS.horarios=async()=>{
+ cabecalho('Horários do ERP','A grade de horários que o '+nomeErp()+' devolve: livres e ocupados por profissional e unidade.');
+ if(!await carregaListas())return;const L=AG.listas;
+ if(!HR.unid)HR.unid=String(L.unid[0].unidade_id);
+ const doUnid=L.prof.filter(p=>String(p.unidades||'').split(/[^\d]+/).includes(HR.unid)||!p.unidades);
+ const lista=doUnid.length?doUnid:L.prof;if(!lista.some(p=>String(p.profissional_id)===HR.prof))HR.prof=String(lista[0].profissional_id);
+ const un=h('select',{onchange:e=>{HR.unid=e.target.value;HR.prof='';VIEWS.horarios()}},...L.unid.map(u=>h('option',{value:u.unidade_id},u.nome_fantasia)));un.value=HR.unid;
+ const pr=h('select',{onchange:e=>{HR.prof=e.target.value;VIEWS.horarios()}},...lista.map(p=>h('option',{value:p.profissional_id},p.nome)));pr.value=HR.prof;
+ const di=h('select',{onchange:e=>{HR.dias=e.target.value;VIEWS.horarios()}},...[3,7,14].map(n=>h('option',{value:n},n+' dias')));di.value=HR.dias;
+ const box=h('div',{},h('p',{class:'mut'},'Carregando...'));
+ $('#view').replaceChildren(h('div',{class:'card'},h('div',{class:'bar'},campo('Unidade',un),campo('Profissional',pr,'grow'),campo('Período',di)),box));
+ const r=await tente(()=>api(`/_admin/horarios?profissional_id=${HR.prof}&unidade_id=${HR.unid}&dias=${HR.dias}`));if(!r)return;
+ const out=[];if(!r.atende_na_unidade)out.push(h('div',{class:'alert warn'},h('b',{},'Este profissional não atende nesta unidade.'),h('span',{},'Por isso não há horários livres.')));
+ for(const d of r.dias){const [a,m,dd]=d.data.split('-');
+  const cel=[...d.livres.map(t=>h('button',{class:'sec slot livre',title:'Criar agendamento neste horário',onclick:()=>abreNovo({unid:HR.unid,prof:HR.prof,data:d.data,hora:t})},t)),
+   ...d.ocupados.map(o=>h('button',{class:'sec slot ocupado',title:(o.paciente||'')+' (agendamento '+o.agendamento_id+')',onclick:()=>{AG.q=String(o.agendamento_id);AG.sel=o.agendamento_id;AG.ini=0;location.hash='#agenda';setTimeout(()=>abreDetalhe(o.agendamento_id),300)}},o.horario+' ocupado'))];
+  out.push(h('h3',{},`${dd}/${m}/${a}`,h('span',{class:'mut peq'},`  ${d.livres.length} livres, ${d.ocupados.length} ocupados`)),h('div',{class:'slots'},...(cel.length?cel:[h('span',{class:'mut'},'Sem horários')])))}
+ box.replaceChildren(...out)};
+/* ---------- Volume e importação ---------- */
+let VI={fmt:'auto',ent:'pacientes',modo:'acrescentar',real:false,texto:'',rel:null,mod:null,modEnt:'pacientes'};
+VIEWS.volume=async()=>{
+ cabecalho('Volume e importação','Gere mais dados, importe CSV ou JSON (inclusive gerado por IA) e exporte o conjunto atual de '+nomeErp()+'.');
+ const tot=await tente(()=>api('/_admin/volume'));if(!tot)return;
+ const num=(v,ph)=>h('input',{type:'number',min:'0',value:v,placeholder:ph||''});
+ const pac=num('',  'ex. 2000'),prof=num('',  'ex. 20'),ag=num('', 'ex. 5000'),dias=num('14'),sem=h('input',{placeholder:'vazio = aleatória'}),un=num('3');
+ const totais=h('div',{class:'mut'});const mostraTot=t=>totais.replaceChildren(`Agora: ${t.unidades} unidades, ${t.profissionais} profissionais, ${t.pacientes} pacientes, ${t.agendamentos} agendamentos.`);mostraTot(tot.totais||tot);
+ const limpa=()=>{AG.listas=null;AG.conf={};AG.ini=0;HR.unid='';HR.prof=''};
+ const gerar=async modo=>{
+  if(modo==='regerar'&&!confirm('Isso apaga os dados atuais de '+nomeErp()+' neste programa e gera tudo de novo.\n\nATENÇÃO: se a conta [[do_cliente]] já carregou os dados antigos, [[o_cliente]] vai conferir um por um os agendamentos que sumiram (2 chamadas cada). Com dezenas de milhares isso trava a conta por horas e bloqueia novas cargas. Prefira Acrescentar. Continuar?'))return;
+  const body={modo,pacientes:pac.value,profissionais:prof.value,agendamentos:ag.value,dias:dias.value,semente:sem.value,unidades:un.value};
+  const r=await tente(()=>api('/_admin/volume',{method:'POST',body}));if(!r)return;limpa();mostraTot(r.totais);aviso(modo==='regerar'?'Dados gerados de novo':'Registros acrescentados')};
+ const fmt=h('select',{onchange:e=>VI.fmt=e.target.value},...[['auto','Detectar'],['json','JSON'],['csv','CSV']].map(([v,t])=>h('option',{value:v},t)));fmt.value=VI.fmt;
+ const ents=['unidades','especialidades','convenios','procedimentos','profissionais','pacientes','agendamentos'];
+ const ent=h('select',{onchange:e=>VI.ent=e.target.value},...ents.map(v=>h('option',{value:v},v)));ent.value=VI.ent;
+ const modo=h('select',{onchange:e=>VI.modo=e.target.value},h('option',{value:'acrescentar'},'Acrescentar aos dados atuais'),h('option',{value:'substituir'},'Substituir tudo (apaga os dados atuais)'));modo.value=VI.modo;
+ const real=h('input',{type:'checkbox',style:'width:auto',onchange:e=>VI.real=e.target.checked});real.checked=VI.real;
+ const txt=h('textarea',{rows:'10',placeholder:'Cole aqui JSON ou CSV, ou escolha um arquivo',oninput:e=>VI.texto=e.target.value});txt.value=VI.texto;
+ const arq=h('input',{type:'file',accept:'.json,.csv,.txt',onchange:async e=>{const f=e.target.files[0];if(f){txt.value=VI.texto=await f.text();if(/\.csv$/i.test(f.name)){fmt.value=VI.fmt='csv'}}}});
+ const rel=h('div',{});
+ const mostraRel=r=>{VI.rel=r;if(!r){rel.replaceChildren();return}
+  const cont=Object.entries(r.criados).filter(([,n])=>n>0).map(([k,n])=>`${n} ${k}`).join(', ')||'nada';
+  rel.replaceChildren(h('div',{class:'alert '+(r.total_erros?'alerta':'ok')},h('b',{},(r.simulado?'Validação: ':'Importado: ')+cont),h('span',{},r.total_erros?`${r.total_erros} linhas com problema. ${r.simulado?'Nada foi alterado.':'As linhas com erro ficaram de fora.'}`:(r.simulado?'Nenhum problema. Nada foi alterado ainda.':'Sem problemas.'))),
+   ...r.avisos.map(a=>h('div',{class:'alert info'},h('b',{},'Atenção'),h('span',{},a))),
+   r.erros.length?h('table',{},h('tr',{},...['Entidade','Linha','Problema'].map(c=>h('th',{},c))),...r.erros.map(e=>h('tr',{},h('td',{},e.entidade),h('td',{},String(e.linha)),h('td',{},e.mensagem)))):null,
+   h('p',{class:'mut peq'},`Total ${r.simulado?'se importar':'agora'}: ${Object.entries(r.totais).map(([k,n])=>n+' '+k).join(', ')}.`))};
+ const importa=async simular=>{
+  if(!simular&&VI.modo==='substituir'&&!confirm('Substituir apaga todos os dados atuais de '+nomeErp()+' neste programa. [[O_cliente]] mantém o que já importou e vai conferir um por um os agendamentos que sumiram, o que com dezenas de milhares trava a conta por horas. Continuar?'))return;
+  const r=await tente(()=>api('/_admin/importar',{method:'POST',body:{texto:txt.value,formato:fmt.value,entidade:ent.value,modo:modo.value,permitir_telefone_real:real.checked,simular}}));if(!r)return;mostraRel(r);
+  if(!simular){limpa();const t=await tente(()=>api('/_admin/volume'));if(t)mostraTot(t.totais);aviso('Importação concluída')}};
+ const exporta=async()=>{const d=await tente(()=>api('/_admin/exportar'));if(!d)return;const blob=new Blob([JSON.stringify(d,null,1)],{type:'application/json'});
+  const a=h('a',{href:URL.createObjectURL(blob),download:`erp-fakes-${ERP}-${new Date().toISOString().slice(0,10)}.json`});document.body.append(a);a.click();a.remove()};
+ const modelo=h('div',{});const mod=await tente(()=>api('/_admin/modelos'));
+ const desenhaMod=()=>{if(!mod)return;const e=mod.entidades[VI.modEnt];
+  modelo.replaceChildren(h('p',{class:'mut peq'},'Obrigatórios: '+e.obrigatorios.join(', ')+'. Colunas: '+e.colunas.join(', ')+'. Listas dentro de uma coluna usam | (barra vertical).'),
+   h('textarea',{rows:'4',readonly:true},e.csv),h('p',{},h('button',{class:'sec peq',onclick:ev=>copiar(e.csv,ev.target)},'Copiar CSV de exemplo')))};
+ const modSel=h('select',{onchange:e=>{VI.modEnt=e.target.value;desenhaMod()}},...ents.map(v=>h('option',{value:v},v)));modSel.value=VI.modEnt;desenhaMod();
+ $('#view').replaceChildren(
+  h('div',{class:'card'},h('h2',{},'Gerar volume'),h('p',{class:'sub'},'Pacientes com telefone inexistente (554800...) e CPF fictício válido. Os ids novos são permanentes: [[o_cliente]] nunca confunde um registro novo com um antigo.'),totais,
+   h('div',{class:'fg',style:'margin-top:12px'},campo('Pacientes',pac),campo('Profissionais',prof),campo('Agendamentos',ag),campo('Dias à frente',dias),campo('Semente',sem),campo('Unidades (só ao gerar de novo, até 4)',un)),
+   h('div',{class:'bt'},h('button',{onclick:()=>gerar('acrescentar')},'Acrescentar'),h('button',{class:'sec',onclick:()=>gerar('regerar')},'Gerar tudo de novo')),
+   h('p',{class:'mut peq'},'Acrescentar usa os campos preenchidos e soma aos dados atuais. Gerar tudo de novo usa os valores como total (vazio mantém 600 pacientes, 1500 agendamentos, 40 profissionais).')),
+  h('div',{class:'card'},h('h2',{},'Importar dados prontos'),h('p',{class:'sub'},'JSON com uma lista por entidade, ou CSV de uma entidade. Valide primeiro: nada muda até você importar.'),
+   h('div',{class:'fg'},campo('Formato',fmt),campo('Entidade (para CSV ou lista)',ent),campo('Modo',modo),h('label',{class:'f'},'Permitir telefone real (só o seu)',real)),
+   campo('Conteúdo',txt,'full'),campo('Ou um arquivo',arq),
+   h('div',{class:'bt'},h('button',{class:'sec',onclick:()=>importa(true)},'Validar sem alterar'),h('button',{onclick:()=>importa(false)},'Importar')),rel),
+  h('div',{class:'grid2'},
+   h('div',{class:'card'},h('h2',{},'Exportar'),h('p',{class:'sub'},'Baixa todos os dados atuais de '+nomeErp()+' no mesmo formato da importação. Serve para guardar um conjunto e restaurar depois com Substituir.'),h('button',{onclick:exporta},'Baixar JSON')),
+   h('div',{class:'card'},h('h2',{},'Modelo por entidade'),campo('Entidade',modSel),modelo)),
+  h('div',{class:'card'},h('h2',{},'Prompt para gerar dados com IA'),h('p',{class:'sub'},'Copie, preencha a quantidade, cole em uma IA e traga o JSON de volta para a importação acima.'),
+   h('textarea',{rows:'14',readonly:true},mod?mod.prompt:''),h('p',{},h('button',{class:'sec',onclick:ev=>copiar(mod?mod.prompt:'',ev.target)},'Copiar prompt'))))};
+VIEWS.chamadas=async()=>{
+ cabecalho('Diário de chamadas','Tudo o que [[o_cliente]] (ou qualquer cliente) pediu ao fake: o que enviou, o que recebeu e quanto demorou. Clique em uma linha para ver o conteúdo.',h('button',{class:'sec',onclick:()=>carga()},'Atualizar'),h('button',{class:'sec',onclick:baixa},'Baixar JSON'),h('button',{class:'sec',onclick:async()=>{await tente(()=>api('/_admin/journal/limpar',{method:'POST',body:{}}));carga()}},'Limpar diário'));
+ const caminho=h('input',{placeholder:'Filtrar por rota',value:CH.caminho,onkeydown:e=>{if(e.key==='Enter'){CH.caminho=e.target.value;carga()}}});
+ const erros=h('input',{type:'checkbox',style:'width:auto',onchange:e=>{CH.erros=e.target.checked;carga()}});erros.checked=CH.erros;
+ const tun=h('input',{type:'checkbox',style:'width:auto',onchange:e=>{CH.tunel=e.target.checked;carga()}});tun.checked=CH.tunel;
+ $('#view').replaceChildren(h('div',{class:'card'},h('div',{class:'bar'},campo('Rota',caminho,'grow'),h('label',{class:'f'},'Só erros e falhas',erros),h('label',{class:'f'},'Só pelo túnel',tun)),h('div',{id:'dj'})));
+ let ultimo=[];async function carga(){const p=new URLSearchParams({limite:100,erp:ERP,caminho:CH.caminho,so_erros:CH.erros?1:0,origem:CH.tunel?'tunel':''});const d=await tente(()=>api('/_admin/journal?'+p));if(!d)return;ultimo=d.itens;
+  $('#dj').replaceChildren(h('p',{class:'mut peq'},`${d.total} chamadas (mostrando as últimas ${d.itens.length}).`),d.itens.length?h('table',{},h('tr',{},...['Hora','Método','Rota','Status','Tempo','Marcas'].map(c=>h('th',{},c))),
+   ...d.itens.map(e=>h('tr',{class:'lin',onclick:()=>abreChamada(e)},h('td',{},hora(e.t)),h('td',{},e.metodo),h('td',{},e.caminho+(Object.keys(e.query).length?'?'+new URLSearchParams(e.query):'')),h('td',{},chip(String(e.status||'sem resposta'),e.status>=400||e.status===0?'err':'ok')),h('td',{},e.ms+' ms'),h('td',{},e.falha?chip('falha: '+e.falha,'warn'):null,' ',e.tunel?chip('túnel'):null)))):vazio('Nenhuma chamada registrada'))}
+ function baixa(){const a=h('a',{href:URL.createObjectURL(new Blob([JSON.stringify(ultimo,null,2)],{type:'application/json'})),download:'chamadas.json'});a.click()}
+ await carga();TIMER=setInterval(carga,3000)};
+function abreChamada(e){abreDrawer(`${e.metodo} ${e.caminho}`,`${hora(e.t)}, ${e.ms} ms`,[
+ h('div',{style:'margin-bottom:12px'},chip(String(e.status||'sem resposta'),e.status>=400||e.status===0?'err':'ok'),' ',e.falha?chip('falha simulada: '+e.falha,'warn'):null,' ',e.tunel?chip('veio pelo túnel'):chip('local')),
+ h('h3',{style:'margin-top:0'},'Parâmetros da URL'),h('pre',{},Object.keys(e.query).length?JSON.stringify(e.query,null,2):'(nenhum)'),
+ h('h3',{},'Enviado (corpo)'),h('pre',{},e.corpo||'(sem corpo)'),h('h3',{},'Recebido'),h('pre',{},e.resposta)],null,true)}
+
+/* ---------- Falhas ---------- */
+VIEWS.falhas=async()=>{
+ cabecalho('Falhas simuladas','Faça o fake se comportar como um ERP com problema e veja como [[o_cliente]] reage. A falha vale para [[o_cliente]] e para qualquer cliente.');
+ const d=await tente(()=>api('/_admin/faults'));if(!d)return;const cat=await tente(()=>api('/_admin/catalog'));const rotas=['*',...(cat?cat.rotas.map(r=>r.caminho):[])];
+ const rota=h('select',{},...rotas.map(r=>h('option',{value:r},r==='*'?'* (todas as rotas)':r))),
+  tipo=h('select',{},...Object.entries(d.tipos).map(([k,t])=>h('option',{value:k},t.rotulo))),valor=h('input',{placeholder:'valor'}),vezes=h('input',{type:'number',placeholder:'sempre'});
+ const ajuda=h('p',{class:'mut peq'});const atualiza=()=>{const t=d.tipos[tipo.value];ajuda.textContent=t.ajuda;valor.placeholder=t.unidade?`${t.unidade} (padrão ${t.padrao})`:'sem valor';valor.disabled=!t.unidade};tipo.onchange=atualiza;atualiza();
+ const regras=h('div',{});const mostra=r=>regras.replaceChildren(r.length?h('table',{},h('tr',{},...['Rota','Falha','Valor','Restam','Disparos',''].map(c=>h('th',{},c))),...r.map(x=>h('tr',{},h('td',{},x.rota),h('td',{},d.tipos[x.tipo].rotulo),h('td',{},String(x.valor??'')),h('td',{},x.restantes==null?'sempre':String(x.restantes)),h('td',{},String(x.disparos)),h('td',{},h('button',{class:'sec peq',onclick:async()=>{await tente(()=>api('/_admin/faults/remover',{method:'POST',body:{id:x.id}}));recarrega()}},'Remover'))))):vazio('Nenhuma falha ativa. O fake responde normalmente.'));
+ async function recarrega(){const n=await tente(()=>api('/_admin/faults'));if(n)mostra(n.regras)}mostra(d.regras);
+ $('#view').replaceChildren(h('div',{class:'grid2'},
+  h('div',{class:'card'},h('h2',{},'Atalhos'),h('p',{class:'sub'},'Um clique ativa a falha. Depois rode a carga ou a ação [[no_cliente]] e abra Chamadas para ver o que ela recebeu.'),h('div',{class:'bt'},...d.atalhos.map(a=>h('button',{class:'sec',onclick:async()=>{await tente(()=>api('/_admin/faults',{method:'POST',body:{rota:a.rota,tipo:a.tipo,valor:a.valor,vezes:a.vezes,metodo:a.metodo}}));aviso('Falha ativada: '+a.nome);recarrega()}},a.nome+(a.vezes?` (${a.vezes}x)`:''))))),
+  h('div',{class:'card'},h('h2',{},'Criar uma falha'),h('div',{class:'fg'},campo('Rota',rota,'full'),campo('Falha',tipo),campo('Valor',valor),campo('Quantas vezes',vezes)),ajuda,h('button',{onclick:async()=>{await tente(()=>api('/_admin/faults',{method:'POST',body:{rota:rota.value,tipo:tipo.value,valor:valor.value,vezes:vezes.value}}));aviso('Falha ativada');recarrega()}},'Ativar falha'))),
+  h('div',{class:'card'},h('h2',{},'Falhas ativas'),regras,h('p',{style:'margin:12px 0 0'},h('button',{class:'sec',onclick:async()=>{await tente(()=>api('/_admin/faults/limpar',{method:'POST',body:{}}));recarrega()}},'Remover todas'))))};
+
+/* ---------- Documentação ---------- */
+VIEWS.docs=async()=>{
+ cabecalho('Documentação do '+nomeErp(),ERP==='feegow'?'Rotas da documentação oficial, quais [[o_cliente]] usa e o que o fake implementa.':'Rotas que [[o_cliente]] usa, lidas do código dela. Este ERP não tem documentação pública.');
+ const d=await tente(()=>api('/_admin/catalog'));if(!d)return;const cfg=await tente(()=>api('/_admin/config'));let so=true;
+ const tab=h('div',{});const desenha=()=>{const itens=d.rotas.filter(r=>!so||r.uso_cliente);tab.replaceChildren(h('table',{},h('tr',{},...['Rota','Seção','O que faz','[[O_cliente]] usa para','Fake','Parâmetros e erros'].map(c=>h('th',{},c))),
+  ...itens.map(r=>h('tr',{},h('td',{},h('b',{},r.metodo+' '+r.caminho)),h('td',{},r.secao),h('td',{},r.resumo),h('td',{},r.uso_cliente||h('span',{class:'mut'},'não usa')),
+   h('td',{},chip(r.implementado?'implementado':'não implementado',r.implementado?'ok':'err'),' ',r.na_documentacao?null:chip('fora da documentação','warn')),h('td',{class:'mut'},[...r.parametros,...r.erros].join(', '))))))};
+ const chk=h('input',{type:'checkbox',style:'width:auto',onchange:e=>{so=e.target.checked;desenha()}});chk.checked=so;desenha();
+ const pag=h('input',{type:'checkbox',style:'width:auto',onchange:async e=>{await tente(()=>api('/_admin/config',{method:'POST',body:{paginacao_real:e.target.checked}}));aviso('Configuração salva')}});pag.checked=!!(cfg&&cfg.paginacao_real);
+ $('#view').replaceChildren(h('div',{class:'card'},h('p',{class:'sub'},'Fonte: ',/^https?:/.test(d.fonte)?h('a',{href:d.fonte,target:'_blank',rel:'noopener',style:'color:var(--ac)'},d.fonte):d.fonte,` (consultada em ${d.consultada_em}).`),
+  h('div',{class:'bar'},h('label',{class:'f'},'Só as rotas que [[o_cliente]] usa',chk)),tab,h('h3',{},'O que o fake não implementa'),h('ul',{class:'mut peq'},...[].concat(d.nao_implementadas).map(x=>h('li',{},x)))),
+  h('div',{class:'grid2'},h('div',{class:'card'},h('h2',{},'Diferenças conhecidas entre o fake e o '+nomeErp()+' real'),h('ul',{},...d.diferencas.map(x=>h('li',{},x)))),
+  ERP==='feegow'?h('div',{class:'card'},h('h2',{},'Comportamentos configuráveis'),h('label',{class:'f'},'Paginar /appoints/search com list_procedures=1 (início 0, 50 por página), como o Feegow real',pag)):null))};
+
+window.addEventListener('hashchange',rota);
+(async()=>{await status();rota();setInterval(status,3000)})();
+</script>
+</body>
+</html>
